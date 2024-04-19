@@ -1,0 +1,57 @@
+service: sls-appsync-example
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: us-west-2
+  profile: west2
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-appsync-plugin
+
+appSync:
+  name: sls-appsync
+
+  logging:
+    level: ALL
+    retentionInDays: 14
+
+  authentication:
+    type: API_KEY
+
+  apiKeys:
+    - name: myKey
+      expiresAfter: 7d
+
+  dataSources:
+    myLambda:
+      type: AWS_LAMBDA
+      config:
+        function:
+          timeout: 30
+          handler: "index.handler"
+
+    myEndpoint:
+      type: "HTTP"
+      config:
+        endpoint: https://dummyjson.com
+
+  resolvers:
+    Query.listPosts:
+      dataSource: myLambda
+      kind: UNIT
+      code: "resolvers/listPosts.js"
+    Query.listUsers:
+      dataSource: myEndpoint
+      kind: UNIT
+      code: "resolvers/listUsers.js"
+
+    Query.getPost:
+      dataSource: myLambda
+      kind: UNIT
+      code: "resolvers/getPost.js"
+    Query.getUser:
+      dataSource: myEndpoint
+      kind: UNIT
+      code: "resolvers/getUser.js"

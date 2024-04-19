@@ -1,0 +1,23 @@
+schema {
+  query: Query
+  # mutation: mutation
+  # subscription: Subscription
+}
+
+type Query {
+  listPosts: [Post]
+  listUsers: [User]
+  getPost(id: ID!): Post
+  getUser(id: ID!): User
+}
+
+type Post {
+  id: ID!
+  title: String
+}
+
+type User {
+  id: ID!
+  firstName: String
+  lastName: String
+}
