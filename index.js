@@ -1,6 +1,4 @@
 module.exports.handler = async (event) => {
-  console.log(event);
-
   const posts = [
     {
       id: "1",
@@ -10,10 +8,15 @@ module.exports.handler = async (event) => {
       id: "2",
       title: "Post Two",
     },
+    {
+      id: "3",
+      title: "Post Three",
+    },
   ];
-  if (event.field === "listPosts") {
-    return posts;
+
+  if (event.field === "getPost") {
+    return posts.find((post) => post.id === event.arguments.id);
   } else {
-    return posts[event.args.id];
+    return posts;
   }
 };
