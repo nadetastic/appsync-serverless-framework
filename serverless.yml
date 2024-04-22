@@ -30,7 +30,7 @@ appSync:
       config:
         function:
           timeout: 30
-          handler: "index.handler"
+          handler: "lambda/index.handler"
 
     myEndpoint:
       type: "HTTP"
