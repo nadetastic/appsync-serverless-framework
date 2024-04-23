@@ -7,8 +7,30 @@ provider:
   profile: west2
   runtime: nodejs18.x
 
+resources:
+  Resources:
+    postsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: postsTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 plugins:
   - serverless-appsync-plugin
+
+package:
+  # individually: true
+  exclude:
+    - resolvers/*
+    - schema.graphql
+    - node_modules/**
 
 appSync:
   name: sls-appsync
@@ -25,12 +47,11 @@ appSync:
       expiresAfter: 7d
 
   dataSources:
-    myLambda:
-      type: AWS_LAMBDA
+    myPostTable:
+      type: AMAZON_DYNAMODB
+      description: "My appsync table"
       config:
-        function:
-          timeout: 30
-          handler: "lambda/index.handler"
+        tableName: postsTable
 
     myEndpoint:
       type: "HTTP"
@@ -39,19 +60,25 @@ appSync:
 
   resolvers:
     Query.listPosts:
-      dataSource: myLambda
+      # dataSource: myLambda
+      dataSource: myPostTable
       kind: UNIT
-      code: "resolvers/listPosts.js"
+      # code: "resolvers/listPosts.js"
+      code: "resolvers/listPostsDDB.js"
     Query.listUsers:
       dataSource: myEndpoint
       kind: UNIT
       code: "resolvers/listUsers.js"
 
-    Query.getPost:
-      dataSource: myLambda
-      kind: UNIT
-      code: "resolvers/getPost.js"
+    # Query.getPost:
+    #   dataSource: myLambda
+    #   kind: UNIT
+    #   code: "resolvers/getPost.js"
     Query.getUser:
       dataSource: myEndpoint
       kind: UNIT
       code: "resolvers/getUser.js"
+    Mutation.addPost:
+      dataSource: myPostTable
+      kind: UNIT
+      code: "resolvers/addPostDDB.js"

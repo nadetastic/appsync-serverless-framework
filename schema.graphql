@@ -1,6 +1,6 @@
 schema {
   query: Query
-  # mutation: mutation
+  mutation: Mutation
   # subscription: Subscription
 }
 
@@ -9,6 +9,14 @@ type Query {
   listUsers: [User]
   getPost(id: ID!): Post
   getUser(id: ID!): User
+}
+
+input AddPostInput {
+  id: ID
+  title: String
+}
+type Mutation {
+  addPost(input: AddPostInput): Post
 }
 
 type Post {
