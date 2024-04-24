@@ -5,7 +5,6 @@ provider:
   name: aws
   region: us-west-2
   profile: west2
-  runtime: nodejs18.x
 
 resources:
   Resources:
@@ -24,13 +23,6 @@ resources:
           WriteCapacityUnits: 1
 plugins:
   - serverless-appsync-plugin
-
-package:
-  # individually: true
-  exclude:
-    - resolvers/*
-    - schema.graphql
-    - node_modules/**
 
 appSync:
   name: sls-appsync
@@ -53,6 +45,18 @@ appSync:
       config:
         tableName: postsTable
 
+    myLambda:
+      type: "AWS_LAMBDA"
+      config:
+        function:
+          handler: "lambda/index.handler"
+          runtime: nodejs18.x
+          package:
+            individually: true
+            patterns:
+              - "!./node_modules**" # exclude root files
+              - "!./**"
+              - "./lambda/**"
     myEndpoint:
       type: "HTTP"
       config:
@@ -70,10 +74,10 @@ appSync:
       kind: UNIT
       code: "resolvers/listUsers.js"
 
-    # Query.getPost:
-    #   dataSource: myLambda
-    #   kind: UNIT
-    #   code: "resolvers/getPost.js"
+    Query.getPost:
+      dataSource: myLambda
+      kind: UNIT
+      code: "resolvers/getPost.js"
     Query.getUser:
       dataSource: myEndpoint
       kind: UNIT
